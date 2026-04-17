@@ -1,0 +1,27 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE folders/files
+.idea/
+.vs/
+.vscode/
+
+# Solution files (requested)
+*.sln
+
+# Logs and temp files
+*.log
+*.tmp
+*.cache
+
+# NuGet packages (if locally restored)
+packages/
+*.nupkg
