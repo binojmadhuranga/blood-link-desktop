@@ -110,10 +110,6 @@ dotnet run
 * Report export
 * Blood stock analytics
 
-## 📚 Purpose
-
-This project is developed as an academic system to improve blood donation management through desktop application technology.
-
 ## 👨‍💻 Author
 
 Developed by Binoj
