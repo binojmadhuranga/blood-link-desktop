@@ -1,14 +1,17 @@
+using System;
 using System.Windows;
-using BloodDonationManagementSystem.Services;
 using System.Windows.Controls;
+using BloodDonationManagementSystem.Services;
 
 namespace BloodDonationManagementSystem.Views;
 
-public partial class RegisterWindow : Window
+public partial class RegisterView : UserControl
 {
     private readonly AuthService _authService = new();
 
-    public RegisterWindow()
+    public event Action? LoginRequested;
+
+    public RegisterView()
     {
         InitializeComponent();
         RoleBox.SelectedIndex = -1;
@@ -33,7 +36,7 @@ public partial class RegisterWindow : Window
 
     private void UpdatePasswordPlaceholder()
     {
-        if (PasswordPlaceholder == null || PasswordBox == null)
+        if (PasswordPlaceholder == null)
             return;
 
         PasswordPlaceholder.Visibility =
@@ -44,7 +47,7 @@ public partial class RegisterWindow : Window
 
     private void UpdateRolePlaceholder()
     {
-        if (RolePlaceholder == null || RoleBox == null)
+        if (RolePlaceholder == null)
             return;
 
         RolePlaceholder.Visibility = RoleBox.SelectedIndex < 0
@@ -73,13 +76,14 @@ public partial class RegisterWindow : Window
             selectedRole);
 
         MessageBox.Show(result ? "Registered" : "Username exists");
+
+        if (result)
+            LoginRequested?.Invoke();
     }
-    
+
     private void OpenLogin_Click(object sender, RoutedEventArgs e)
     {
-        var loginWindow = new LoginWindow();
-        loginWindow.Show();
-        Close();
+        LoginRequested?.Invoke();
     }
-    
 }
+

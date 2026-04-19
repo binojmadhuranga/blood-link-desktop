@@ -1,13 +1,19 @@
+using System;
 using System.Windows;
+using System.Windows.Controls;
+using BloodDonationManagementSystem.Models;
 using BloodDonationManagementSystem.Services;
 
 namespace BloodDonationManagementSystem.Views;
 
-public partial class LoginWindow : Window
+public partial class LoginView : UserControl
 {
     private readonly AuthService _authService = new();
 
-    public LoginWindow()
+    public event Action? RegisterRequested;
+    public event Action<User>? LoginSucceeded;
+
+    public LoginView()
     {
         InitializeComponent();
         UpdatePasswordPlaceholder();
@@ -25,7 +31,7 @@ public partial class LoginWindow : Window
 
     private void UpdatePasswordPlaceholder()
     {
-        if (PasswordPlaceholder == null || PasswordBox == null)
+        if (PasswordPlaceholder == null)
             return;
 
         PasswordPlaceholder.Visibility =
@@ -36,9 +42,7 @@ public partial class LoginWindow : Window
 
     private void Login_Click(object sender, RoutedEventArgs e)
     {
-        var user = _authService.Login(
-            UsernameBox.Text,
-            PasswordBox.Password);
+        var user = _authService.Login(UsernameBox.Text, PasswordBox.Password);
 
         if (user == null)
         {
@@ -46,22 +50,12 @@ public partial class LoginWindow : Window
             return;
         }
 
-        if (user.Role == "Admin")
-            new AdminDashboard().Show();
-
-        else if (user.Role == "Donor")
-            new DonorDashboard().Show();
-
-        else if (user.Role == "Hospital")
-            new HospitalDashboard().Show();
-
-        Close();
+        LoginSucceeded?.Invoke(user);
     }
-    
+
     private void OpenRegister_Click(object sender, RoutedEventArgs e)
     {
-        var registerWindow = new RegisterWindow();
-        registerWindow.Show();
-        Close();
+        RegisterRequested?.Invoke();
     }
 }
+

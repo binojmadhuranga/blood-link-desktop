@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using BloodDonationManagementSystem.Seeders;
-using BloodDonationManagementSystem.Views;
 
 namespace BloodDonationManagementSystem;
 
@@ -13,8 +12,9 @@ public partial class App : Application
         // Initialize database and seed admin account
         DatabaseSeeder.Seed();
 
-        // Open login window first
-        var loginWindow = new LoginWindow();
-        loginWindow.Show();
+        // Open the single-window shell and swap views inside it.
+        var mainWindow = new MainWindow();
+        MainWindow = mainWindow;
+        mainWindow.Show();
     }
 }
