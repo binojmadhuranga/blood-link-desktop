@@ -24,4 +24,12 @@ public partial class RegisterWindow : Window
 
         MessageBox.Show(result ? "Registered" : "Username exists");
     }
+    
+    private void OpenLogin_Click(object sender, RoutedEventArgs e)
+    {
+        var loginWindow = new LoginWindow();
+        loginWindow.Show();
+        Close();
+    }
+    
 }

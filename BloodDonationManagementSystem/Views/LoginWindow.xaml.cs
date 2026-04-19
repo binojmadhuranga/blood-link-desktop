@@ -35,4 +35,11 @@ public partial class LoginWindow : Window
 
         Close();
     }
+    
+    private void OpenRegister_Click(object sender, RoutedEventArgs e)
+    {
+        var registerWindow = new RegisterWindow();
+        registerWindow.Show();
+        Close();
+    }
 }

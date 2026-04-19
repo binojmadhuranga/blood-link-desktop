@@ -6,14 +6,9 @@
         Width="400">
 
     <StackPanel Margin="20">
-
-        <TextBlock Text="Username" Margin="5"/>
         <TextBox x:Name="UsernameBox" Margin="5"/>
-
-        <TextBlock Text="Password" Margin="5"/>
         <PasswordBox x:Name="PasswordBox" Margin="5"/>
 
-        <TextBlock Text="Select Role" Margin="5"/>
         <ComboBox x:Name="RoleBox" Margin="5">
             <ComboBoxItem Content="Donor"/>
             <ComboBoxItem Content="Hospital"/>
@@ -21,9 +16,11 @@
 
         <Button Content="Register"
                 Click="Register_Click"
-                Margin="5"
-                Height="35"/>
+                Margin="5"/>
 
+        <Button Content="Already have an account? Login"
+                Click="OpenLogin_Click"
+                Margin="5"/>
     </StackPanel>
 
 </Window>

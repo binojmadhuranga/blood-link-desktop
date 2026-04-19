@@ -6,7 +6,12 @@
     <StackPanel Margin="20">
         <TextBox x:Name="UsernameBox" Margin="5"/>
         <PasswordBox x:Name="PasswordBox" Margin="5"/>
+
         <Button Content="Login" Click="Login_Click" Margin="5"/>
+
+        <Button Content="Don't have an account? Register"
+                Click="OpenRegister_Click"
+                Margin="5"/>
     </StackPanel>
 
 </Window>
