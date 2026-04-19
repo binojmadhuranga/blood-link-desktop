@@ -10,6 +10,28 @@ public partial class LoginWindow : Window
     public LoginWindow()
     {
         InitializeComponent();
+        UpdatePasswordPlaceholder();
+    }
+
+    private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
+    {
+        UpdatePasswordPlaceholder();
+    }
+
+    private void PasswordBox_OnFocusChanged(object sender, RoutedEventArgs e)
+    {
+        UpdatePasswordPlaceholder();
+    }
+
+    private void UpdatePasswordPlaceholder()
+    {
+        if (PasswordPlaceholder == null || PasswordBox == null)
+            return;
+
+        PasswordPlaceholder.Visibility =
+            string.IsNullOrEmpty(PasswordBox.Password) && !PasswordBox.IsKeyboardFocused
+                ? Visibility.Visible
+                : Visibility.Collapsed;
     }
 
     private void Login_Click(object sender, RoutedEventArgs e)
