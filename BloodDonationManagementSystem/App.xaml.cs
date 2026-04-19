@@ -1,12 +1,13 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
+using BloodDonationManagementSystem.Seeders;
 
 namespace BloodDonationManagementSystem;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App : Application
 {
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        DatabaseSeeder.Seed();
+        base.OnStartup(e);
+    }
 }
