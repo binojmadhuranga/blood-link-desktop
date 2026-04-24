@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +11,7 @@ namespace BloodDonationManagementSystem;
 
 public partial class MainWindow : Window
 {
-    private bool _isNavigating;
+    private readonly SemaphoreSlim _navigationLock = new(1, 1);
 
     public MainWindow()
     {
@@ -45,16 +46,17 @@ public partial class MainWindow : Window
 
     private async Task NavigateToAsync(UserControl view)
     {
-        if (_isNavigating)
-            return;
-
-        _isNavigating = true;
-
-        await AnimateOpacityAsync(1, 0, 140);
-        ShellContent.Content = view;
-        await AnimateOpacityAsync(0, 1, 170);
-
-        _isNavigating = false;
+        await _navigationLock.WaitAsync();
+        try
+        {
+            await AnimateOpacityAsync(1, 0, 140);
+            ShellContent.Content = view;
+            await AnimateOpacityAsync(0, 1, 170);
+        }
+        finally
+        {
+            _navigationLock.Release();
+        }
     }
 
     private Task AnimateOpacityAsync(double from, double to, int durationMs)
