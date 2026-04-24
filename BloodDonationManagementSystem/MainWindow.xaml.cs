@@ -37,7 +37,7 @@ public partial class MainWindow : Window
 
     private async Task ShowDashboardViewAsync(User user)
     {
-        var dashboardView = new DashboardView(user.Role, user.Username);
+        var dashboardView = new DashboardView(user.Role, user.Username, user.Id);
         dashboardView.LogoutRequested += () => _ = ShowLoginViewAsync();
 
         await NavigateToAsync(dashboardView);

@@ -5,19 +5,24 @@
 
     <UserControl.Resources>
         <LinearGradientBrush x:Key="MainBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#FFF7F9FC" Offset="0"/>
-            <GradientStop Color="#FFFFE9EE" Offset="1"/>
+            <GradientStop Color="#FFF4F8FF" Offset="0"/>
+            <GradientStop Color="#FFFDEDF3" Offset="1"/>
         </LinearGradientBrush>
         <SolidColorBrush x:Key="CardBrush" Color="#FFFFFFFF"/>
-        <SolidColorBrush x:Key="AccentBrush" Color="#FFCD2E4B"/>
-        <SolidColorBrush x:Key="AccentHoverBrush" Color="#FFB7243F"/>
-        <SolidColorBrush x:Key="TitleBrush" Color="#FF1F2A44"/>
-        <SolidColorBrush x:Key="MutedBrush" Color="#FF7B8191"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#FFB91C3D"/>
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#FFA61635"/>
+        <SolidColorBrush x:Key="TitleBrush" Color="#FF1E2E4A"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#FF6F778A"/>
+
+        <Style x:Key="InputStyle" TargetType="Control">
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Height" Value="38"/>
+        </Style>
 
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-            <Setter Property="Height" Value="46"/>
-            <Setter Property="Padding" Value="24,0"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
@@ -32,31 +37,127 @@
     </UserControl.Resources>
 
     <Grid Background="{StaticResource MainBackgroundBrush}">
-        <Border Width="520"
-                Padding="36"
+        <Border Margin="20"
+                Padding="20"
                 Background="{StaticResource CardBrush}"
-                CornerRadius="18"
-                BorderBrush="#FFE5EAF2"
-                BorderThickness="1"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-            <StackPanel HorizontalAlignment="Center">
-                <TextBlock x:Name="DashboardTitle"
-                           FontSize="30"
-                           FontWeight="Bold"
-                           Foreground="{StaticResource TitleBrush}"
-                           TextAlignment="Center"/>
-                <TextBlock x:Name="WelcomeText"
-                           Margin="0,8,0,28"
-                           FontSize="14"
-                           Foreground="{StaticResource MutedBrush}"
-                           TextAlignment="Center"/>
+                CornerRadius="16"
+                BorderBrush="#FFE2E8F2"
+                BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <Button Content="Logout"
-                        Click="Logout_Click"
-                        Width="150"
-                        Style="{StaticResource PrimaryButtonStyle}"/>
-            </StackPanel>
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left">
+                        <TextBlock x:Name="DashboardTitle"
+                                   FontSize="28"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TitleBrush}"/>
+                        <TextBlock x:Name="WelcomeText"
+                                   Margin="0,4,0,0"
+                                   FontSize="13"
+                                   Foreground="{StaticResource MutedBrush}"/>
+                    </StackPanel>
+                    <Button Content="Logout"
+                            Width="120"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Click="Logout_Click"/>
+                </DockPanel>
+
+                <Grid Grid.Row="1" Margin="0,18,0,0">
+                    <Grid x:Name="HospitalPanel" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="360"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Padding="16" CornerRadius="12" Background="#FFF8FAFE" BorderBrush="#FFE4EAF4" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Create Blood Request" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TitleBrush}" Margin="0,0,0,14"/>
+                                <TextBlock Text="Select Donor" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+                                <ComboBox x:Name="DonorComboBox"
+                                          Style="{StaticResource InputStyle}"
+                                          DisplayMemberPath="DisplayName"
+                                          SelectionChanged="DonorComboBox_OnSelectionChanged"/>
+
+                                <TextBlock Text="Blood Group" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBox x:Name="BloodGroupBox" Style="{StaticResource InputStyle}"/>
+
+                                <TextBlock Text="Quantity (units)" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBox x:Name="QuantityBox" Style="{StaticResource InputStyle}" Text="1"/>
+
+                                <TextBlock Text="Notes (optional)" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBox x:Name="NotesBox" Height="72" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,14"/>
+
+                                <Button Content="Send Request" Style="{StaticResource PrimaryButtonStyle}" Click="CreateRequest_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Padding="16" CornerRadius="12" Background="#FFF8FAFE" BorderBrush="#FFE4EAF4" BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Your Requests" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TitleBrush}" Margin="0,0,0,12"/>
+                                <DataGrid x:Name="HospitalRequestsGrid"
+                                          Grid.Row="1"
+                                          AutoGenerateColumns="False"
+                                          IsReadOnly="True"
+                                          HeadersVisibility="Column"
+                                          CanUserAddRows="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Donor" Binding="{Binding DonorName}" Width="*"/>
+                                        <DataGridTextColumn Header="Group" Binding="{Binding BloodGroup}" Width="80"/>
+                                        <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="60"/>
+                                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90"/>
+                                        <DataGridTextColumn Header="Requested" Binding="{Binding RequestedAt, StringFormat=dd-MMM-yyyy HH:mm}" Width="150"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <Grid x:Name="DonorPanel" Visibility="Collapsed">
+                        <Border Padding="16" CornerRadius="12" Background="#FFF8FAFE" BorderBrush="#FFE4EAF4" BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Blood Requests For You" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TitleBrush}" Margin="0,0,0,12"/>
+                                <DataGrid x:Name="DonorRequestsGrid"
+                                          Grid.Row="1"
+                                          AutoGenerateColumns="False"
+                                          IsReadOnly="True"
+                                          HeadersVisibility="Column"
+                                          CanUserAddRows="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Hospital" Binding="{Binding HospitalName}" Width="*"/>
+                                        <DataGridTextColumn Header="Group" Binding="{Binding BloodGroup}" Width="80"/>
+                                        <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="60"/>
+                                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90"/>
+                                        <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="200"/>
+                                        <DataGridTextColumn Header="Requested" Binding="{Binding RequestedAt, StringFormat=dd-MMM-yyyy HH:mm}" Width="150"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <TextBlock x:Name="GenericPanelText"
+                               Visibility="Collapsed"
+                               Text="Role-specific dashboard is not available for this account yet."
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="15"
+                               Foreground="{StaticResource MutedBrush}"/>
+                </Grid>
+            </Grid>
         </Border>
     </Grid>
 
