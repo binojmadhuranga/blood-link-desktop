@@ -16,11 +16,11 @@ public partial class DashboardView : UserControl
     public DashboardView(string role, string username, int userId)
     {
         InitializeComponent();
-        _role = role;
+        _role = (role ?? string.Empty).Trim();
         _userId = userId;
 
-        DashboardTitle.Text = $"{role} Dashboard";
-        WelcomeText.Text = $"Welcome {username}. You are signed in as {role}.";
+        DashboardTitle.Text = $"{_role} Dashboard";
+        WelcomeText.Text = $"Welcome {username}. You are signed in as {_role}.";
 
         SetupRoleDashboard();
     }
