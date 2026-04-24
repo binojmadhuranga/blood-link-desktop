@@ -38,10 +38,36 @@ public partial class MainWindow : Window
 
     private async Task ShowDashboardViewAsync(User user)
     {
-        var dashboardView = new DashboardView(user.Role, user.Username, user.Id);
-        dashboardView.LogoutRequested += () => _ = ShowLoginViewAsync();
+        UserControl dashboardView = CreateDashboardView(user);
+
+        switch (dashboardView)
+        {
+            case AdminDashboardView adminDashboard:
+                adminDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
+                break;
+            case HospitalDashboardView hospitalDashboard:
+                hospitalDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
+                break;
+            case DonorDashboardView donorDashboard:
+                donorDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
+                break;
+        }
 
         await NavigateToAsync(dashboardView);
+    }
+
+    private static UserControl CreateDashboardView(User user)
+    {
+        if (string.Equals(user.Role, "Admin", System.StringComparison.OrdinalIgnoreCase))
+            return new AdminDashboardView(user.Username, user.Id);
+
+        if (string.Equals(user.Role, "Hospital", System.StringComparison.OrdinalIgnoreCase))
+            return new HospitalDashboardView(user.Username, user.Id);
+
+        if (string.Equals(user.Role, "Donor", System.StringComparison.OrdinalIgnoreCase))
+            return new DonorDashboardView(user.Username, user.Id);
+
+        return new LoginView();
     }
 
     private async Task NavigateToAsync(UserControl view)
