@@ -11,6 +11,7 @@ public partial class HospitalDashboardView : UserControl
 
     private readonly BloodRequestService _bloodRequestService = new();
     private readonly int _userId;
+    private bool _isDashboardLoaded;
 
     public HospitalDashboardView(string username, int userId)
     {
@@ -20,17 +21,44 @@ public partial class HospitalDashboardView : UserControl
         LogoutButton.Click += Logout_Click;
         DonorComboBox.SelectionChanged += DonorComboBox_OnSelectionChanged;
         CreateRequestButton.Click += CreateRequest_Click;
+        Loaded += HospitalDashboardView_OnLoaded;
         WelcomeText.Text = $"Welcome {username}. You are signed in as Hospital.";
-        LoadDashboard();
+    }
+
+    private void HospitalDashboardView_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (_isDashboardLoaded)
+            return;
+
+        _isDashboardLoaded = true;
+        TryLoadDashboard();
+    }
+
+    private void TryLoadDashboard()
+    {
+        try
+        {
+            LoadDashboard();
+        }
+        catch (Exception ex)
+        {
+            DonorComboBox.ItemsSource = Array.Empty<DonorOption>();
+            HospitalRequestsGrid.ItemsSource = Array.Empty<HospitalRequestItem>();
+            RequestsSentText.Text = "0";
+            PendingText.Text = "0";
+            DonorsAvailableText.Text = "0";
+            MessageBox.Show($"Unable to load hospital data: {ex.Message}");
+        }
     }
 
     private void LoadDashboard()
     {
-        DonorComboBox.ItemsSource = _bloodRequestService.GetDonorOptions();
-        DonorsAvailableText.Text = _bloodRequestService.GetDonorOptions().Count.ToString();
-        HospitalRequestsGrid.ItemsSource = _bloodRequestService.GetHospitalRequests(_userId);
+        var donorOptions = _bloodRequestService.GetDonorOptions();
+        DonorComboBox.ItemsSource = donorOptions;
+        DonorsAvailableText.Text = donorOptions.Count.ToString();
 
         var requests = _bloodRequestService.GetHospitalRequests(_userId);
+        HospitalRequestsGrid.ItemsSource = requests;
         RequestsSentText.Text = requests.Count.ToString();
         PendingText.Text = requests.Count(request => string.Equals(request.Status, "Pending", StringComparison.OrdinalIgnoreCase)).ToString();
     }
@@ -79,7 +107,7 @@ public partial class HospitalDashboardView : UserControl
 
     private void Refresh_Click(object sender, RoutedEventArgs e)
     {
-        LoadDashboard();
+        TryLoadDashboard();
     }
 
     private void Logout_Click(object sender, RoutedEventArgs e)

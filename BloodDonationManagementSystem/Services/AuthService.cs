@@ -10,7 +10,7 @@ public class AuthService
         using var db = new AppDbContext();
 
         var normalizedUsername = NormalizeUsernameForLookup(username);
-        var normalizedPassword = (password ?? string.Empty).Trim();
+        var normalizedPassword = password.Trim();
 
         if (string.IsNullOrWhiteSpace(normalizedUsername) || string.IsNullOrWhiteSpace(normalizedPassword))
             return null;
@@ -37,8 +37,8 @@ public class AuthService
     {
         using var db = new AppDbContext();
 
-        var normalizedUsername = (username ?? string.Empty).Trim();
-        var normalizedPassword = (password ?? string.Empty).Trim();
+        var normalizedUsername = username.Trim();
+        var normalizedPassword = password.Trim();
 
         if (string.IsNullOrWhiteSpace(normalizedUsername) || string.IsNullOrWhiteSpace(normalizedPassword))
             return false;
@@ -49,6 +49,8 @@ public class AuthService
             return false;
 
         var normalizedRole = NormalizeRole(role);
+        if (!IsSupportedRegistrationRole(normalizedRole))
+            return false;
 
         var user = new User
         {
@@ -102,6 +104,11 @@ public class AuthService
     private static string NormalizeUsernameForLookup(string? username)
     {
         return (username ?? string.Empty).Trim().ToLower();
+    }
+
+    private static bool IsSupportedRegistrationRole(string role)
+    {
+        return role == "Donor" || role == "Hospital" || role == "Admin";
     }
 
     private static bool EnsureRoleProfile(AppDbContext db, User user)

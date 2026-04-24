@@ -11,8 +11,9 @@ public class BloodRequestService
         using var db = new AppDbContext();
 
         return db.Donors
-            .Select(donor => new DonorOption(donor.Id, donor.FullName, donor.BloodGroup, donor.Location))
+            .AsNoTracking()
             .OrderBy(donor => donor.FullName)
+            .Select(donor => new DonorOption(donor.Id, donor.FullName, donor.BloodGroup, donor.Location))
             .ToList();
     }
 

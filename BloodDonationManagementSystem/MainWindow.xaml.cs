@@ -38,25 +38,39 @@ public partial class MainWindow : Window
 
     private async Task ShowDashboardViewAsync(User user)
     {
-        UserControl dashboardView = CreateDashboardView(user);
-
-        switch (dashboardView)
+        try
         {
-            case AdminDashboardView adminDashboard:
-                adminDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
-                break;
-            case HospitalDashboardView hospitalDashboard:
-                hospitalDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
-                break;
-            case DonorDashboardView donorDashboard:
-                donorDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
-                break;
-        }
+            var dashboardView = CreateDashboardView(user);
+            if (dashboardView == null)
+            {
+                MessageBox.Show($"Unsupported role '{user.Role}'. Please login again.");
+                await ShowLoginViewAsync();
+                return;
+            }
 
-        await NavigateToAsync(dashboardView);
+            switch (dashboardView)
+            {
+                case AdminDashboardView adminDashboard:
+                    adminDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
+                    break;
+                case HospitalDashboardView hospitalDashboard:
+                    hospitalDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
+                    break;
+                case DonorDashboardView donorDashboard:
+                    donorDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
+                    break;
+            }
+
+            await NavigateToAsync(dashboardView);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Unable to open dashboard: {ex.Message}");
+            await ShowLoginViewAsync();
+        }
     }
 
-    private static UserControl CreateDashboardView(User user)
+    private static UserControl? CreateDashboardView(User user)
     {
         var normalizedRole = NormalizeRoleForNavigation(user.Role);
 
@@ -69,8 +83,7 @@ public partial class MainWindow : Window
         if (string.Equals(normalizedRole, "Donor", System.StringComparison.OrdinalIgnoreCase))
             return new DonorDashboardView(user.Username, user.Id);
 
-        MessageBox.Show($"Unsupported role '{user.Role}'. Please contact admin.");
-        return new LoginView();
+        return null;
     }
 
     private static string NormalizeRoleForNavigation(string? role)

@@ -63,7 +63,7 @@ public partial class RegisterView : UserControl
             return;
         }
 
-        var selectedRole = selectedRoleItem.Content?.ToString();
+        var selectedRole = selectedRoleItem.Tag?.ToString() ?? selectedRoleItem.Content?.ToString();
         if (string.IsNullOrWhiteSpace(selectedRole))
         {
             MessageBox.Show("Please select a role.");

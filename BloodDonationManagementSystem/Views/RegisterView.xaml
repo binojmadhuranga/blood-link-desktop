@@ -120,8 +120,8 @@
                     <ComboBox x:Name="RoleBox"
                               Style="{StaticResource InputBoxStyle}"
                               SelectionChanged="RoleBox_OnSelectionChanged">
-                        <ComboBoxItem Content="Donor"/>
-                        <ComboBoxItem Content="Hospital"/>
+                        <ComboBoxItem Content="Donor" Tag="Donor"/>
+                        <ComboBoxItem Content="Hospital" Tag="Hospital"/>
                     </ComboBox>
                     <TextBlock x:Name="RolePlaceholder"
                                Text="Select role"

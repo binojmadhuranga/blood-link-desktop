@@ -12,6 +12,7 @@ public static class DatabaseSeeder
         using var db = new AppDbContext();
         db.Database.EnsureCreated();
         EnsureBloodRequestColumns(db);
+        NormalizeUsersAndProfiles(db);
 
         if (!db.Users.Any())
         {
@@ -24,6 +25,62 @@ public static class DatabaseSeeder
 
             db.SaveChanges();
         }
+    }
+
+    private static void NormalizeUsersAndProfiles(AppDbContext db)
+    {
+        var users = db.Users.ToList();
+        var hasChanges = false;
+
+        foreach (var user in users)
+        {
+            var normalizedRole = NormalizeRole(user.Role);
+            if (!string.Equals(user.Role, normalizedRole, StringComparison.Ordinal))
+            {
+                user.Role = normalizedRole;
+                hasChanges = true;
+            }
+
+            if (normalizedRole == "Donor" && !db.Donors.Any(d => d.UserId == user.Id))
+            {
+                db.Donors.Add(new Donor
+                {
+                    FullName = user.Username,
+                    UserId = user.Id
+                });
+                hasChanges = true;
+            }
+
+            if (normalizedRole == "Hospital" && !db.Hospitals.Any(h => h.UserId == user.Id))
+            {
+                db.Hospitals.Add(new Hospital
+                {
+                    Name = user.Username,
+                    UserId = user.Id
+                });
+                hasChanges = true;
+            }
+        }
+
+        if (hasChanges)
+            db.SaveChanges();
+    }
+
+    private static string NormalizeRole(string? role)
+    {
+        var value = (role ?? string.Empty).Trim();
+        var key = new string(value.Where(char.IsLetter).ToArray()).ToLowerInvariant();
+
+        if (key is "donor" or "donors")
+            return "Donor";
+
+        if (key is "hospital" or "hospitals" or "hostpital" or "hospitial" or "hospitral" or "hostpitral")
+            return "Hospital";
+
+        if (key is "admin" or "administrator")
+            return "Admin";
+
+        return value;
     }
 
     private static void EnsureBloodRequestColumns(AppDbContext db)
