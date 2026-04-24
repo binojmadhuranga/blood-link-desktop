@@ -13,4 +13,6 @@ public class Donor
     public DateTime LastDonationDate { get; set; }
 
     public int UserId { get; set; }
+
+    public ICollection<BloodDonationManagementSystem.Models.BloodRequest> BloodRequests { get; set; } = new List<BloodDonationManagementSystem.Models.BloodRequest>();
 }

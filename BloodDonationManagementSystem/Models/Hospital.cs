@@ -7,4 +7,6 @@ public class Hospital
     public string Location { get; set; } =  "";
     public string ContactNumber { get; set; } = "";
     public int UserId { get; set; }
+
+    public ICollection<BloodRequest> BloodRequests { get; set; } = new List<BloodRequest>();
 }
