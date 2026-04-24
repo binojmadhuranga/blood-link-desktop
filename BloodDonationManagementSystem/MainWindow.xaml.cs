@@ -58,16 +58,36 @@ public partial class MainWindow : Window
 
     private static UserControl CreateDashboardView(User user)
     {
-        if (string.Equals(user.Role, "Admin", System.StringComparison.OrdinalIgnoreCase))
+        var normalizedRole = NormalizeRoleForNavigation(user.Role);
+
+        if (string.Equals(normalizedRole, "Admin", System.StringComparison.OrdinalIgnoreCase))
             return new AdminDashboardView(user.Username, user.Id);
 
-        if (string.Equals(user.Role, "Hospital", System.StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(normalizedRole, "Hospital", System.StringComparison.OrdinalIgnoreCase))
             return new HospitalDashboardView(user.Username, user.Id);
 
-        if (string.Equals(user.Role, "Donor", System.StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(normalizedRole, "Donor", System.StringComparison.OrdinalIgnoreCase))
             return new DonorDashboardView(user.Username, user.Id);
 
+        MessageBox.Show($"Unsupported role '{user.Role}'. Please contact admin.");
         return new LoginView();
+    }
+
+    private static string NormalizeRoleForNavigation(string? role)
+    {
+        var value = (role ?? string.Empty).Trim();
+        var key = new string(value.Where(char.IsLetter).ToArray()).ToLowerInvariant();
+
+        if (key is "admin" or "administrator")
+            return "Admin";
+
+        if (key is "donor" or "donors")
+            return "Donor";
+
+        if (key is "hospital" or "hospitals" or "hostpital" or "hospitial" or "hospitral" or "hostpitral")
+            return "Hospital";
+
+        return value;
     }
 
     private async Task NavigateToAsync(UserControl view)

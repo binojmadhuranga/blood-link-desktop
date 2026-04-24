@@ -85,14 +85,15 @@ public class AuthService
     private static string NormalizeRole(string? role)
     {
         var value = (role ?? string.Empty).Trim();
+        var key = new string(value.Where(char.IsLetter).ToArray()).ToLowerInvariant();
 
-        if (string.Equals(value, "Donor", StringComparison.OrdinalIgnoreCase))
+        if (key is "donor" or "donors")
             return "Donor";
 
-        if (string.Equals(value, "Hospital", StringComparison.OrdinalIgnoreCase))
+        if (key is "hospital" or "hospitals" or "hostpital" or "hospitial" or "hospitral" or "hostpitral")
             return "Hospital";
 
-        if (string.Equals(value, "Admin", StringComparison.OrdinalIgnoreCase))
+        if (key is "admin" or "administrator")
             return "Admin";
 
         return value;
