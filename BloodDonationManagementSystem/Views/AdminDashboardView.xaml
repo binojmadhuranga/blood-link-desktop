@@ -1,0 +1,148 @@
+<UserControl x:Class="BloodDonationManagementSystem.Views.AdminDashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <LinearGradientBrush x:Key="MainBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FFF5F8FF" Offset="0"/>
+            <GradientStop Color="#FFFFEEF2" Offset="1"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="CardBrush" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#FF3B5BDB"/>
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#FF314ED0"/>
+        <SolidColorBrush x:Key="TitleBrush" Color="#FF18243C"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#FF6C7488"/>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="StatCardStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="18"/>
+            <Setter Property="Background" Value="#FFFFFFFF"/>
+            <Setter Property="BorderBrush" Value="#FFE3EAF4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource MainBackgroundBrush}">
+        <Border Margin="20"
+                Padding="20"
+                Background="{StaticResource CardBrush}"
+                CornerRadius="18"
+                BorderBrush="#FFE3EAF4"
+                BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left">
+                        <TextBlock Text="Admin Dashboard"
+                                   FontSize="30"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TitleBrush}"/>
+                        <TextBlock x:Name="WelcomeText"
+                                   Margin="0,4,0,0"
+                                   FontSize="13"
+                                   Foreground="{StaticResource MutedBrush}"/>
+                    </StackPanel>
+
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="RefreshButton" Content="Refresh"
+                                Margin="0,0,10,0"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button x:Name="LogoutButton" Content="Logout"
+                                Width="120"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <UniformGrid Grid.Row="1" Columns="4" Margin="0,18,0,18">
+                    <Border Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Total Users" Foreground="{StaticResource MutedBrush}"/>
+                            <TextBlock x:Name="UsersCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Hospitals" Foreground="{StaticResource MutedBrush}"/>
+                            <TextBlock x:Name="HospitalsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Donors" Foreground="{StaticResource MutedBrush}"/>
+                            <TextBlock x:Name="DonorsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border CornerRadius="16" Padding="18" Background="#FFF5F8FF" BorderBrush="#FFD9E2F5" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Blood Requests" Foreground="{StaticResource MutedBrush}"/>
+                            <TextBlock x:Name="RequestsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <Border Grid.Row="2"
+                        Padding="16"
+                        CornerRadius="16"
+                        Background="#FFF8FAFE"
+                        BorderBrush="#FFE3EAF4"
+                        BorderThickness="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Recent Blood Requests"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource TitleBrush}"
+                                   Margin="0,0,0,12"/>
+
+                        <DataGrid x:Name="RequestsGrid"
+                                  Grid.Row="1"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column"
+                                  RowBackground="White"
+                                  AlternatingRowBackground="#FFF5F7FB">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Hospital" Binding="{Binding HospitalName}" Width="*"/>
+                                <DataGridTextColumn Header="Donor" Binding="{Binding DonorName}" Width="*"/>
+                                <DataGridTextColumn Header="Group" Binding="{Binding BloodGroup}" Width="90"/>
+                                <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="70"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                                <DataGridTextColumn Header="Requested" Binding="{Binding RequestedAt, StringFormat=dd-MMM-yyyy HH:mm}" Width="170"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
+
+
