@@ -5,13 +5,13 @@
 
     <UserControl.Resources>
         <LinearGradientBrush x:Key="MainBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#FFF7F9FC" Offset="0"/>
-            <GradientStop Color="#FFFFE9EE" Offset="1"/>
+            <GradientStop Color="#FFF4F7FF" Offset="0"/>
+            <GradientStop Color="#FFFFEEF2" Offset="1"/>
         </LinearGradientBrush>
 
         <SolidColorBrush x:Key="CardBrush" Color="#FFFFFFFF"/>
-        <SolidColorBrush x:Key="AccentBrush" Color="#FFCD2E4B"/>
-        <SolidColorBrush x:Key="AccentHoverBrush" Color="#FFB7243F"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#FFD63A57"/>
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#FFC92E4A"/>
         <SolidColorBrush x:Key="TitleBrush" Color="#FF1F2A44"/>
         <SolidColorBrush x:Key="MutedBrush" Color="#FF7B8191"/>
         <SolidColorBrush x:Key="InputBorderBrush" Color="#FFD7DCE6"/>
@@ -59,7 +59,7 @@
     </UserControl.Resources>
 
     <Grid Background="{StaticResource MainBackgroundBrush}">
-        <Border Width="420"
+        <Border Width="460"
                 Padding="34"
                 Background="{StaticResource CardBrush}"
                 CornerRadius="18"
@@ -67,12 +67,15 @@
                 BorderThickness="1"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect Color="#2619202D" BlurRadius="24" ShadowDepth="4"/>
+            </Border.Effect>
             <StackPanel>
                 <TextBlock Text="Create Account"
                            FontSize="30"
                            FontWeight="Bold"
                            Foreground="{StaticResource TitleBrush}"/>
-                <TextBlock Text="Join and start supporting blood donation today"
+                <TextBlock Text="Create your donor or hospital account in seconds"
                            Margin="0,8,0,26"
                            FontSize="14"
                            Foreground="{StaticResource MutedBrush}"/>
@@ -117,6 +120,54 @@
                 </Grid>
 
                 <Grid>
+                    <TextBox x:Name="ContactNumberBox" Style="{StaticResource InputBoxStyle}"/>
+                    <TextBlock Text="Contact number"
+                               Margin="14,0,0,14"
+                               VerticalAlignment="Center"
+                               Foreground="#FF9CA3B3"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Text, ElementName=ContactNumberBox}" Value=""/>
+                                            <Condition Binding="{Binding IsKeyboardFocused, ElementName=ContactNumberBox}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <Grid>
+                    <TextBox x:Name="LocationBox" Style="{StaticResource InputBoxStyle}"/>
+                    <TextBlock Text="Location"
+                               Margin="14,0,0,14"
+                               VerticalAlignment="Center"
+                               Foreground="#FF9CA3B3"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Text, ElementName=LocationBox}" Value=""/>
+                                            <Condition Binding="{Binding IsKeyboardFocused, ElementName=LocationBox}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <Grid>
                     <ComboBox x:Name="RoleBox"
                               Style="{StaticResource InputBoxStyle}"
                               SelectionChanged="RoleBox_OnSelectionChanged">
@@ -132,7 +183,7 @@
                                Visibility="Visible"/>
                 </Grid>
 
-                <Button Content="Register"
+                <Button Content="Create account"
                         Click="Register_Click"
                         Style="{StaticResource PrimaryButtonStyle}"
                         Margin="0,8,0,16"/>

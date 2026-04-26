@@ -57,6 +57,18 @@ public partial class RegisterView : UserControl
 
     private void Register_Click(object sender, RoutedEventArgs e)
     {
+        if (string.IsNullOrWhiteSpace(ContactNumberBox.Text))
+        {
+            MessageBox.Show("Please enter a contact number.");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(LocationBox.Text))
+        {
+            MessageBox.Show("Please enter a location.");
+            return;
+        }
+
         if (RoleBox.SelectedItem is not ComboBoxItem selectedRoleItem)
         {
             MessageBox.Show("Please select a role.");
@@ -73,9 +85,11 @@ public partial class RegisterView : UserControl
         var result = _authService.Register(
             UsernameBox.Text,
             PasswordBox.Password,
-            selectedRole);
+            selectedRole,
+            ContactNumberBox.Text,
+            LocationBox.Text);
 
-        MessageBox.Show(result ? "Registered" : "Username exists");
+        MessageBox.Show(result ? "Registered" : "Registration failed. Check your details or use another username.");
 
         if (result)
             LoginRequested?.Invoke();
