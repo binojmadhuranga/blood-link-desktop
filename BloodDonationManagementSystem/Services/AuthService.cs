@@ -33,14 +33,20 @@ public class AuthService
         return user;
     }
 
-    public bool Register(string username, string password, string role)
+    public bool Register(string username, string password, string role, string contactNumber, string location, string bloodGroup)
     {
         using var db = new AppDbContext();
 
         var normalizedUsername = username.Trim();
         var normalizedPassword = password.Trim();
+        var normalizedContactNumber = contactNumber.Trim();
+        var normalizedLocation = location.Trim();
+        var normalizedBloodGroup = bloodGroup.Trim().ToUpperInvariant();
 
-        if (string.IsNullOrWhiteSpace(normalizedUsername) || string.IsNullOrWhiteSpace(normalizedPassword))
+        if (string.IsNullOrWhiteSpace(normalizedUsername) ||
+            string.IsNullOrWhiteSpace(normalizedPassword) ||
+            string.IsNullOrWhiteSpace(normalizedContactNumber) ||
+            string.IsNullOrWhiteSpace(normalizedLocation))
             return false;
 
         var lookupUsername = NormalizeUsernameForLookup(normalizedUsername);
@@ -52,11 +58,16 @@ public class AuthService
         if (!IsSupportedRegistrationRole(normalizedRole))
             return false;
 
+        if (normalizedRole == "Donor" && string.IsNullOrWhiteSpace(normalizedBloodGroup))
+            return false;
+
         var user = new User
         {
             Username = normalizedUsername,
             Password = normalizedPassword,
-            Role = normalizedRole
+            Role = normalizedRole,
+            ContactNumber = normalizedContactNumber,
+            Location = normalizedLocation
         };
 
         db.Users.Add(user);
@@ -67,6 +78,9 @@ public class AuthService
             db.Donors.Add(new Donor
             {
                 FullName = normalizedUsername,
+                BloodGroup = normalizedBloodGroup,
+                Contact = normalizedContactNumber,
+                Location = normalizedLocation,
                 UserId = user.Id
             });
         }
@@ -76,6 +90,8 @@ public class AuthService
             db.Hospitals.Add(new Hospital
             {
                 Name = normalizedUsername,
+                ContactNumber = normalizedContactNumber,
+                Location = normalizedLocation,
                 UserId = user.Id
             });
         }
@@ -113,14 +129,43 @@ public class AuthService
 
     private static bool EnsureRoleProfile(AppDbContext db, User user)
     {
+        var hasChanges = false;
+
+        user.ContactNumber ??= string.Empty;
+        user.Location ??= string.Empty;
+
         if (user.Role == "Donor" && !db.Donors.Any(d => d.UserId == user.Id))
         {
             db.Donors.Add(new Donor
             {
                 FullName = user.Username,
+                Contact = user.ContactNumber,
+                Location = user.Location,
                 UserId = user.Id
             });
             return true;
+        }
+
+        if (user.Role == "Donor")
+        {
+            var donor = db.Donors.FirstOrDefault(d => d.UserId == user.Id);
+            if (donor != null)
+            {
+                donor.Contact ??= string.Empty;
+                donor.Location ??= string.Empty;
+
+                if (string.IsNullOrWhiteSpace(donor.Contact) && !string.IsNullOrWhiteSpace(user.ContactNumber))
+                {
+                    donor.Contact = user.ContactNumber;
+                    hasChanges = true;
+                }
+
+                if (string.IsNullOrWhiteSpace(donor.Location) && !string.IsNullOrWhiteSpace(user.Location))
+                {
+                    donor.Location = user.Location;
+                    hasChanges = true;
+                }
+            }
         }
 
         if (user.Role == "Hospital" && !db.Hospitals.Any(h => h.UserId == user.Id))
@@ -128,11 +173,35 @@ public class AuthService
             db.Hospitals.Add(new Hospital
             {
                 Name = user.Username,
+                ContactNumber = user.ContactNumber,
+                Location = user.Location,
                 UserId = user.Id
             });
             return true;
         }
 
-        return false;
+        if (user.Role == "Hospital")
+        {
+            var hospital = db.Hospitals.FirstOrDefault(h => h.UserId == user.Id);
+            if (hospital != null)
+            {
+                hospital.ContactNumber ??= string.Empty;
+                hospital.Location ??= string.Empty;
+
+                if (string.IsNullOrWhiteSpace(hospital.ContactNumber) && !string.IsNullOrWhiteSpace(user.ContactNumber))
+                {
+                    hospital.ContactNumber = user.ContactNumber;
+                    hasChanges = true;
+                }
+
+                if (string.IsNullOrWhiteSpace(hospital.Location) && !string.IsNullOrWhiteSpace(user.Location))
+                {
+                    hospital.Location = user.Location;
+                    hasChanges = true;
+                }
+            }
+        }
+
+        return hasChanges;
     }
 }
