@@ -157,6 +157,7 @@ public static class DatabaseSeeder
 
         if (TableExists(db, "Donors"))
         {
+            AddColumnIfMissing(db, "Donors", "BloodGroup", $"ALTER TABLE Donors ADD COLUMN BloodGroup TEXT NOT NULL DEFAULT '';");
             AddColumnIfMissing(db, "Donors", "Contact", $"ALTER TABLE Donors ADD COLUMN Contact TEXT NOT NULL DEFAULT '';");
             AddColumnIfMissing(db, "Donors", "Location", $"ALTER TABLE Donors ADD COLUMN Location TEXT NOT NULL DEFAULT '';");
         }

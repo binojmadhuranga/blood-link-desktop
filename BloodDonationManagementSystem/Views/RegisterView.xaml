@@ -104,6 +104,28 @@
                     </TextBlock>
                 </Grid>
 
+                <Grid x:Name="BloodGroupSection" Visibility="Collapsed">
+                    <ComboBox x:Name="BloodGroupBox"
+                              Style="{StaticResource InputBoxStyle}"
+                              SelectionChanged="BloodGroupBox_OnSelectionChanged">
+                        <ComboBoxItem Content="A+"/>
+                        <ComboBoxItem Content="A-"/>
+                        <ComboBoxItem Content="B+"/>
+                        <ComboBoxItem Content="B-"/>
+                        <ComboBoxItem Content="AB+"/>
+                        <ComboBoxItem Content="AB-"/>
+                        <ComboBoxItem Content="O+"/>
+                        <ComboBoxItem Content="O-"/>
+                    </ComboBox>
+                    <TextBlock x:Name="BloodGroupPlaceholder"
+                               Text="Select blood group"
+                               Margin="14,0,0,14"
+                               VerticalAlignment="Center"
+                               Foreground="#FF9CA3B3"
+                               IsHitTestVisible="False"
+                               Visibility="Visible"/>
+                </Grid>
+
                 <Grid>
                     <PasswordBox x:Name="PasswordBox"
                                  Style="{StaticResource InputBoxStyle}"

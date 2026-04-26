@@ -33,7 +33,7 @@ public class AuthService
         return user;
     }
 
-    public bool Register(string username, string password, string role, string contactNumber, string location)
+    public bool Register(string username, string password, string role, string contactNumber, string location, string bloodGroup)
     {
         using var db = new AppDbContext();
 
@@ -41,6 +41,7 @@ public class AuthService
         var normalizedPassword = password.Trim();
         var normalizedContactNumber = contactNumber.Trim();
         var normalizedLocation = location.Trim();
+        var normalizedBloodGroup = bloodGroup.Trim().ToUpperInvariant();
 
         if (string.IsNullOrWhiteSpace(normalizedUsername) ||
             string.IsNullOrWhiteSpace(normalizedPassword) ||
@@ -55,6 +56,9 @@ public class AuthService
 
         var normalizedRole = NormalizeRole(role);
         if (!IsSupportedRegistrationRole(normalizedRole))
+            return false;
+
+        if (normalizedRole == "Donor" && string.IsNullOrWhiteSpace(normalizedBloodGroup))
             return false;
 
         var user = new User
@@ -74,6 +78,7 @@ public class AuthService
             db.Donors.Add(new Donor
             {
                 FullName = normalizedUsername,
+                BloodGroup = normalizedBloodGroup,
                 Contact = normalizedContactNumber,
                 Location = normalizedLocation,
                 UserId = user.Id
