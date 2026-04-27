@@ -14,15 +14,6 @@
         <SolidColorBrush x:Key="TitleBrush" Color="#FF18243C"/>
         <SolidColorBrush x:Key="MutedBrush" Color="#FF6C7488"/>
 
-        <Style x:Key="InputStyle" TargetType="Control">
-            <Setter Property="Height" Value="42"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-            <Setter Property="Padding" Value="14,0"/>
-            <Setter Property="Background" Value="#FFF9FBFF"/>
-            <Setter Property="BorderBrush" Value="#FFD9E2F1"/>
-            <Setter Property="BorderThickness" Value="1.3"/>
-        </Style>
-
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="42"/>
             <Setter Property="Padding" Value="18,0"/>
@@ -35,6 +26,15 @@
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource AccentHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="#FF334155"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF1E293B"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -76,6 +76,10 @@
                     </StackPanel>
 
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="OpenRequestPanelButton" Content="Request Donor"
+                                Margin="0,0,10,0"
+                                Width="140"
+                                Style="{StaticResource SecondaryButtonStyle}"/>
                         <Button x:Name="RefreshButton" Content="Refresh"
                                 Margin="0,0,10,0"
                                 Style="{StaticResource PrimaryButtonStyle}"/>
@@ -115,23 +119,10 @@
 
                     <Border Grid.Column="0" Padding="16" CornerRadius="16" Background="#FFF8FAFE" BorderBrush="#FFE3EAF4" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Create Blood Request" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TitleBrush}" Margin="0,0,0,14"/>
-
-                            <TextBlock Text="Select Donor" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-                            <ComboBox x:Name="DonorComboBox"
-                                      Style="{StaticResource InputStyle}"
-                                      DisplayMemberPath="DisplayName"/>
-
-                            <TextBlock Text="Blood Group" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBox x:Name="BloodGroupBox" Style="{StaticResource InputStyle}"/>
-
-                            <TextBlock Text="Quantity (units)" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBox x:Name="QuantityBox" Style="{StaticResource InputStyle}" Text="1"/>
-
-                            <TextBlock Text="Notes (optional)" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBox x:Name="NotesBox" Height="74" Margin="0,0,0,14" AcceptsReturn="True" TextWrapping="Wrap"/>
-
-                            <Button x:Name="CreateRequestButton" Content="Send Request" Style="{StaticResource PrimaryButtonStyle}"/>
+                            <TextBlock Text="Request Flow" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TitleBrush}" Margin="0,0,0,14"/>
+                            <TextBlock Text="1. Click 'Request Donor'." FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"/>
+                            <TextBlock Text="2. Select one or more registered donors." FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"/>
+                            <TextBlock Text="3. Click Register to send requests." FontSize="13" Foreground="{StaticResource MutedBrush}"/>
                         </StackPanel>
                     </Border>
 

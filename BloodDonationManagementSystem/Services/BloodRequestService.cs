@@ -70,6 +70,57 @@ public class BloodRequestService
         return true;
     }
 
+    public BulkRequestResult CreateRequestsForDonors(int hospitalUserId, IReadOnlyCollection<int> donorIds, int quantity, string notes)
+    {
+        if (donorIds.Count == 0)
+            return new BulkRequestResult(0, new[] { "Please select at least one donor." });
+
+        if (quantity <= 0)
+            return new BulkRequestResult(0, new[] { "Quantity must be greater than zero." });
+
+        using var db = new AppDbContext();
+
+        var hospital = db.Hospitals.FirstOrDefault(h => h.UserId == hospitalUserId);
+        if (hospital == null)
+            return new BulkRequestResult(0, new[] { "Hospital profile not found for this user." });
+
+        var selectedIds = donorIds.Distinct().ToList();
+        var donors = db.Donors
+            .Where(d => selectedIds.Contains(d.Id))
+            .ToList();
+
+        var failures = new List<string>();
+        var foundIds = donors.Select(d => d.Id).ToHashSet();
+        foreach (var missingId in selectedIds.Where(id => !foundIds.Contains(id)))
+            failures.Add($"Donor with id {missingId} was not found.");
+
+        foreach (var donor in donors)
+        {
+            if (string.IsNullOrWhiteSpace(donor.BloodGroup))
+            {
+                failures.Add($"{donor.FullName} does not have a blood group configured.");
+                continue;
+            }
+
+            db.BloodRequests.Add(new BloodRequest
+            {
+                HospitalId = hospital.Id,
+                DonorId = donor.Id,
+                BloodGroup = donor.BloodGroup.Trim(),
+                Quantity = quantity,
+                Notes = (notes ?? string.Empty).Trim(),
+                Status = PendingStatus,
+                RequestedAt = DateTime.UtcNow
+            });
+        }
+
+        var successCount = db.ChangeTracker.Entries<BloodRequest>().Count(entry => entry.State == EntityState.Added);
+        if (successCount > 0)
+            db.SaveChanges();
+
+        return new BulkRequestResult(successCount, failures);
+    }
+
     public IReadOnlyList<HospitalRequestItem> GetHospitalRequests(int hospitalUserId)
     {
         using var db = new AppDbContext();
@@ -185,4 +236,9 @@ public record DonorRequestItem(
     string HospitalName,
     DateTime RequestedAt,
     string Notes);
+
+public record BulkRequestResult(int SuccessCount, IReadOnlyList<string> Failures)
+{
+    public bool IsSuccess => SuccessCount > 0;
+}
 
