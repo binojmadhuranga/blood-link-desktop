@@ -47,6 +47,42 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Margin" Value="0,0,16,0"/>
         </Style>
+
+        <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FFE2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#FFF0F3F9"/>
+            <Setter Property="VerticalGridLinesBrush" Value="Transparent"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+        </Style>
+
+        <Style x:Key="ModernDataGridHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#FFF7F9FC"/>
+            <Setter Property="Foreground" Value="#FF334155"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderBrush" Value="#FFE2E8F0"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
+
+        <Style x:Key="ModernDataGridCellStyle" TargetType="DataGridCell">
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#FF1E293B"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#FFFDE8EC"/>
+                    <Setter Property="Foreground" Value="#FF7F1D1D"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <Grid Background="{StaticResource MainBackgroundBrush}">
@@ -138,16 +174,21 @@
                                       AutoGenerateColumns="False"
                                       IsReadOnly="True"
                                       CanUserAddRows="False"
-                                      HeadersVisibility="Column"
+                                      Style="{StaticResource ModernDataGridStyle}"
+                                      ColumnHeaderStyle="{StaticResource ModernDataGridHeaderStyle}"
+                                      CellStyle="{StaticResource ModernDataGridCellStyle}"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      MinWidth="620"
                                       RowBackground="White"
                                       AlternatingRowBackground="#FFF5F7FB">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Donor" Binding="{Binding DonorName}" Width="*"/>
-                                    <DataGridTextColumn Header="Group" Binding="{Binding BloodGroup}" Width="90"/>
-                                    <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="70"/>
-                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="110"/>
-                                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="220"/>
-                                    <DataGridTextColumn Header="Requested" Binding="{Binding RequestedAt, StringFormat=dd-MMM-yyyy HH:mm}" Width="170"/>
+                                    <DataGridTextColumn Header="Donor" Binding="{Binding DonorName}" MinWidth="180" Width="220"/>
+                                    <DataGridTextColumn Header="Group" Binding="{Binding BloodGroup}" MinWidth="90" Width="100"/>
+                                    <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" MinWidth="70" Width="80"/>
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" MinWidth="110" Width="120"/>
+                                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" MinWidth="260" Width="300"/>
+                                    <DataGridTextColumn Header="Requested" Binding="{Binding RequestedAt, StringFormat=dd-MMM-yyyy HH:mm}" MinWidth="170" Width="190"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
