@@ -14,15 +14,6 @@
         <SolidColorBrush x:Key="TitleBrush" Color="#FF18243C"/>
         <SolidColorBrush x:Key="MutedBrush" Color="#FF6C7488"/>
 
-        <Style x:Key="InputStyle" TargetType="Control">
-            <Setter Property="Height" Value="42"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-            <Setter Property="Padding" Value="14,0"/>
-            <Setter Property="Background" Value="#FFF9FBFF"/>
-            <Setter Property="BorderBrush" Value="#FFD9E2F1"/>
-            <Setter Property="BorderThickness" Value="1.3"/>
-        </Style>
-
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="42"/>
             <Setter Property="Padding" Value="18,0"/>
@@ -39,6 +30,15 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="#FF334155"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF1E293B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="StatCardStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="16"/>
             <Setter Property="Padding" Value="18"/>
@@ -46,6 +46,42 @@
             <Setter Property="BorderBrush" Value="#FFE3EAF4"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Margin" Value="0,0,16,0"/>
+        </Style>
+
+        <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FFE2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#FFF0F3F9"/>
+            <Setter Property="VerticalGridLinesBrush" Value="Transparent"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+        </Style>
+
+        <Style x:Key="ModernDataGridHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#FFF7F9FC"/>
+            <Setter Property="Foreground" Value="#FF334155"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderBrush" Value="#FFE2E8F0"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
+
+        <Style x:Key="ModernDataGridCellStyle" TargetType="DataGridCell">
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#FF1E293B"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#FFFDE8EC"/>
+                    <Setter Property="Foreground" Value="#FF7F1D1D"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
 
@@ -76,6 +112,10 @@
                     </StackPanel>
 
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="OpenRequestPanelButton" Content="Request Donor"
+                                Margin="0,0,10,0"
+                                Width="140"
+                                Style="{StaticResource SecondaryButtonStyle}"/>
                         <Button x:Name="RefreshButton" Content="Refresh"
                                 Margin="0,0,10,0"
                                 Style="{StaticResource PrimaryButtonStyle}"/>
@@ -115,23 +155,10 @@
 
                     <Border Grid.Column="0" Padding="16" CornerRadius="16" Background="#FFF8FAFE" BorderBrush="#FFE3EAF4" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Create Blood Request" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TitleBrush}" Margin="0,0,0,14"/>
-
-                            <TextBlock Text="Select Donor" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-                            <ComboBox x:Name="DonorComboBox"
-                                      Style="{StaticResource InputStyle}"
-                                      DisplayMemberPath="DisplayName"/>
-
-                            <TextBlock Text="Blood Group" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBox x:Name="BloodGroupBox" Style="{StaticResource InputStyle}"/>
-
-                            <TextBlock Text="Quantity (units)" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBox x:Name="QuantityBox" Style="{StaticResource InputStyle}" Text="1"/>
-
-                            <TextBlock Text="Notes (optional)" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBox x:Name="NotesBox" Height="74" Margin="0,0,0,14" AcceptsReturn="True" TextWrapping="Wrap"/>
-
-                            <Button x:Name="CreateRequestButton" Content="Send Request" Style="{StaticResource PrimaryButtonStyle}"/>
+                            <TextBlock Text="Request Flow" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TitleBrush}" Margin="0,0,0,14"/>
+                            <TextBlock Text="1. Click 'Request Donor'." FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"/>
+                            <TextBlock Text="2. Select one or more registered donors." FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"/>
+                            <TextBlock Text="3. Click Register to send requests." FontSize="13" Foreground="{StaticResource MutedBrush}"/>
                         </StackPanel>
                     </Border>
 
@@ -147,16 +174,21 @@
                                       AutoGenerateColumns="False"
                                       IsReadOnly="True"
                                       CanUserAddRows="False"
-                                      HeadersVisibility="Column"
+                                      Style="{StaticResource ModernDataGridStyle}"
+                                      ColumnHeaderStyle="{StaticResource ModernDataGridHeaderStyle}"
+                                      CellStyle="{StaticResource ModernDataGridCellStyle}"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      MinWidth="620"
                                       RowBackground="White"
                                       AlternatingRowBackground="#FFF5F7FB">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Donor" Binding="{Binding DonorName}" Width="*"/>
-                                    <DataGridTextColumn Header="Group" Binding="{Binding BloodGroup}" Width="90"/>
-                                    <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="70"/>
-                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="110"/>
-                                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="220"/>
-                                    <DataGridTextColumn Header="Requested" Binding="{Binding RequestedAt, StringFormat=dd-MMM-yyyy HH:mm}" Width="170"/>
+                                    <DataGridTextColumn Header="Donor" Binding="{Binding DonorName}" MinWidth="180" Width="220"/>
+                                    <DataGridTextColumn Header="Group" Binding="{Binding BloodGroup}" MinWidth="90" Width="100"/>
+                                    <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" MinWidth="70" Width="80"/>
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" MinWidth="110" Width="120"/>
+                                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" MinWidth="260" Width="300"/>
+                                    <DataGridTextColumn Header="Requested" Binding="{Binding RequestedAt, StringFormat=dd-MMM-yyyy HH:mm}" MinWidth="170" Width="190"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
