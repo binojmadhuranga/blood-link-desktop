@@ -6,6 +6,10 @@ namespace BloodDonationManagementSystem.Services;
 
 public class BloodRequestService
 {
+    public const string PendingStatus = "Pending";
+    public const string AcceptedStatus = "Accepted";
+    public const string RejectedStatus = "Rejected";
+
     public IReadOnlyList<DonorOption> GetDonorOptions()
     {
         using var db = new AppDbContext();
@@ -56,7 +60,7 @@ public class BloodRequestService
             BloodGroup = bloodGroup.Trim(),
             Quantity = quantity,
             Notes = notes.Trim(),
-            Status = "Pending",
+            Status = PendingStatus,
             RequestedAt = DateTime.UtcNow
         };
 
@@ -102,6 +106,58 @@ public class BloodRequestService
                 request.RequestedAt,
                 request.Notes))
             .ToList();
+    }
+
+    public bool UpdateRequestStatus(int donorUserId, int requestId, string newStatus, out string error)
+    {
+        error = string.Empty;
+        var normalizedStatus = NormalizeTargetStatus(newStatus);
+
+        if (string.IsNullOrWhiteSpace(normalizedStatus))
+        {
+            error = "Invalid request status.";
+            return false;
+        }
+
+        using var db = new AppDbContext();
+
+        var donor = db.Donors.FirstOrDefault(d => d.UserId == donorUserId);
+        if (donor == null)
+        {
+            error = "Donor profile not found for this account.";
+            return false;
+        }
+
+        var request = db.BloodRequests.FirstOrDefault(r => r.Id == requestId && r.DonorId == donor.Id);
+        if (request == null)
+        {
+            error = "Request not found for this donor.";
+            return false;
+        }
+
+        if (!string.Equals(request.Status, PendingStatus, StringComparison.OrdinalIgnoreCase))
+        {
+            error = "Only pending requests can be updated.";
+            return false;
+        }
+
+        request.Status = normalizedStatus;
+        db.SaveChanges();
+        return true;
+    }
+
+    private static string NormalizeTargetStatus(string? status)
+    {
+        var value = (status ?? string.Empty).Trim();
+
+        if (string.Equals(value, AcceptedStatus, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(value, "Approved", StringComparison.OrdinalIgnoreCase))
+            return AcceptedStatus;
+
+        if (string.Equals(value, RejectedStatus, StringComparison.OrdinalIgnoreCase))
+            return RejectedStatus;
+
+        return string.Empty;
     }
 }
 
