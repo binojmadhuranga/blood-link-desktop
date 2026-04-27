@@ -17,6 +17,8 @@ public partial class DonorDashboardView : UserControl
         InitializeComponent();
         _userId = userId;
         RefreshButton.Click += Refresh_Click;
+        AcceptRequestButton.Click += AcceptRequest_Click;
+        RejectRequestButton.Click += RejectRequest_Click;
         LogoutButton.Click += Logout_Click;
         WelcomeText.Text = $"Welcome {username}. You are signed in as Donor.";
         LoadDashboard();
@@ -28,8 +30,39 @@ public partial class DonorDashboardView : UserControl
 
         DonorRequestsGrid.ItemsSource = requests;
         RequestsCountText.Text = requests.Count.ToString();
-        PendingCountText.Text = requests.Count(request => string.Equals(request.Status, "Pending", StringComparison.OrdinalIgnoreCase)).ToString();
-        ApprovedCountText.Text = requests.Count(request => string.Equals(request.Status, "Approved", StringComparison.OrdinalIgnoreCase)).ToString();
+        PendingCountText.Text = requests.Count(request => string.Equals(request.Status, BloodRequestService.PendingStatus, StringComparison.OrdinalIgnoreCase)).ToString();
+        ApprovedCountText.Text = requests.Count(request =>
+            string.Equals(request.Status, BloodRequestService.AcceptedStatus, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(request.Status, "Approved", StringComparison.OrdinalIgnoreCase)).ToString();
+    }
+
+    private void AcceptRequest_Click(object sender, RoutedEventArgs e)
+    {
+        UpdateSelectedRequest(BloodRequestService.AcceptedStatus);
+    }
+
+    private void RejectRequest_Click(object sender, RoutedEventArgs e)
+    {
+        UpdateSelectedRequest(BloodRequestService.RejectedStatus);
+    }
+
+    private void UpdateSelectedRequest(string targetStatus)
+    {
+        if (DonorRequestsGrid.SelectedItem is not DonorRequestItem selectedRequest)
+        {
+            MessageBox.Show("Please select a request first.");
+            return;
+        }
+
+        var updated = _bloodRequestService.UpdateRequestStatus(_userId, selectedRequest.Id, targetStatus, out var error);
+        if (!updated)
+        {
+            MessageBox.Show(error);
+            return;
+        }
+
+        MessageBox.Show($"Request marked as {targetStatus}.");
+        LoadDashboard();
     }
 
     private void Refresh_Click(object sender, RoutedEventArgs e)

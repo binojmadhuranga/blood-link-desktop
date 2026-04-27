@@ -6,6 +6,10 @@ namespace BloodDonationManagementSystem.Services;
 
 public class BloodRequestService
 {
+    public const string PendingStatus = "Pending";
+    public const string AcceptedStatus = "Accepted";
+    public const string RejectedStatus = "Rejected";
+
     public IReadOnlyList<DonorOption> GetDonorOptions()
     {
         using var db = new AppDbContext();
@@ -56,7 +60,7 @@ public class BloodRequestService
             BloodGroup = bloodGroup.Trim(),
             Quantity = quantity,
             Notes = notes.Trim(),
-            Status = "Pending",
+            Status = PendingStatus,
             RequestedAt = DateTime.UtcNow
         };
 
@@ -64,6 +68,57 @@ public class BloodRequestService
         db.SaveChanges();
 
         return true;
+    }
+
+    public BulkRequestResult CreateRequestsForDonors(int hospitalUserId, IReadOnlyCollection<int> donorIds, int quantity, string notes)
+    {
+        if (donorIds.Count == 0)
+            return new BulkRequestResult(0, new[] { "Please select at least one donor." });
+
+        if (quantity <= 0)
+            return new BulkRequestResult(0, new[] { "Quantity must be greater than zero." });
+
+        using var db = new AppDbContext();
+
+        var hospital = db.Hospitals.FirstOrDefault(h => h.UserId == hospitalUserId);
+        if (hospital == null)
+            return new BulkRequestResult(0, new[] { "Hospital profile not found for this user." });
+
+        var selectedIds = donorIds.Distinct().ToList();
+        var donors = db.Donors
+            .Where(d => selectedIds.Contains(d.Id))
+            .ToList();
+
+        var failures = new List<string>();
+        var foundIds = donors.Select(d => d.Id).ToHashSet();
+        foreach (var missingId in selectedIds.Where(id => !foundIds.Contains(id)))
+            failures.Add($"Donor with id {missingId} was not found.");
+
+        foreach (var donor in donors)
+        {
+            if (string.IsNullOrWhiteSpace(donor.BloodGroup))
+            {
+                failures.Add($"{donor.FullName} does not have a blood group configured.");
+                continue;
+            }
+
+            db.BloodRequests.Add(new BloodRequest
+            {
+                HospitalId = hospital.Id,
+                DonorId = donor.Id,
+                BloodGroup = donor.BloodGroup.Trim(),
+                Quantity = quantity,
+                Notes = (notes ?? string.Empty).Trim(),
+                Status = PendingStatus,
+                RequestedAt = DateTime.UtcNow
+            });
+        }
+
+        var successCount = db.ChangeTracker.Entries<BloodRequest>().Count(entry => entry.State == EntityState.Added);
+        if (successCount > 0)
+            db.SaveChanges();
+
+        return new BulkRequestResult(successCount, failures);
     }
 
     public IReadOnlyList<HospitalRequestItem> GetHospitalRequests(int hospitalUserId)
@@ -103,6 +158,58 @@ public class BloodRequestService
                 request.Notes))
             .ToList();
     }
+
+    public bool UpdateRequestStatus(int donorUserId, int requestId, string newStatus, out string error)
+    {
+        error = string.Empty;
+        var normalizedStatus = NormalizeTargetStatus(newStatus);
+
+        if (string.IsNullOrWhiteSpace(normalizedStatus))
+        {
+            error = "Invalid request status.";
+            return false;
+        }
+
+        using var db = new AppDbContext();
+
+        var donor = db.Donors.FirstOrDefault(d => d.UserId == donorUserId);
+        if (donor == null)
+        {
+            error = "Donor profile not found for this account.";
+            return false;
+        }
+
+        var request = db.BloodRequests.FirstOrDefault(r => r.Id == requestId && r.DonorId == donor.Id);
+        if (request == null)
+        {
+            error = "Request not found for this donor.";
+            return false;
+        }
+
+        if (!string.Equals(request.Status, PendingStatus, StringComparison.OrdinalIgnoreCase))
+        {
+            error = "Only pending requests can be updated.";
+            return false;
+        }
+
+        request.Status = normalizedStatus;
+        db.SaveChanges();
+        return true;
+    }
+
+    private static string NormalizeTargetStatus(string? status)
+    {
+        var value = (status ?? string.Empty).Trim();
+
+        if (string.Equals(value, AcceptedStatus, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(value, "Approved", StringComparison.OrdinalIgnoreCase))
+            return AcceptedStatus;
+
+        if (string.Equals(value, RejectedStatus, StringComparison.OrdinalIgnoreCase))
+            return RejectedStatus;
+
+        return string.Empty;
+    }
 }
 
 public record DonorOption(int Id, string FullName, string BloodGroup, string Location)
@@ -129,4 +236,9 @@ public record DonorRequestItem(
     string HospitalName,
     DateTime RequestedAt,
     string Notes);
+
+public record BulkRequestResult(int SuccessCount, IReadOnlyList<string> Failures)
+{
+    public bool IsSuccess => SuccessCount > 0;
+}
 

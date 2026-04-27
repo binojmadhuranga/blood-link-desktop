@@ -55,6 +55,7 @@ public partial class MainWindow : Window
                     break;
                 case HospitalDashboardView hospitalDashboard:
                     hospitalDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
+                    hospitalDashboard.RequestDonorRequested += () => _ = ShowHospitalDonorRequestViewAsync(user);
                     break;
                 case DonorDashboardView donorDashboard:
                     donorDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
@@ -101,6 +102,15 @@ public partial class MainWindow : Window
             return "Hospital";
 
         return value;
+    }
+
+    private async Task ShowHospitalDonorRequestViewAsync(User user)
+    {
+        var requestView = new HospitalDonorRequestView(user.Username, user.Id);
+        requestView.BackRequested += () => _ = ShowDashboardViewAsync(user);
+        requestView.LogoutRequested += () => _ = ShowLoginViewAsync();
+
+        await NavigateToAsync(requestView);
     }
 
     private async Task NavigateToAsync(UserControl view)
