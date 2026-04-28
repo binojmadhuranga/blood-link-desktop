@@ -74,42 +74,66 @@
                                 Width="120"
                                 Style="{StaticResource PrimaryButtonStyle}"/>
                     </StackPanel>
-
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,130,0">
-                        <Button x:Name="ManageDonorsButton" Content="Manage Donors"
-                                Margin="0,0,10,0"
-                                Style="{StaticResource PrimaryButtonStyle}"/>
-                        <Button x:Name="ManageHospitalsButton" Content="Manage Hospitals"
-                                Style="{StaticResource PrimaryButtonStyle}"/>
-                    </StackPanel>
                 </DockPanel>
 
-                <UniformGrid Grid.Row="1" Columns="4" Margin="0,18,0,18">
-                    <Border Style="{StaticResource StatCardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Total Users" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBlock x:Name="UsersCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource StatCardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Hospitals" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBlock x:Name="HospitalsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource StatCardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Donors" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBlock x:Name="DonorsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border CornerRadius="16" Padding="18" Background="#FFF5F8FF" BorderBrush="#FFD9E2F5" BorderThickness="1">
-                        <StackPanel>
-                            <TextBlock Text="Blood Requests" Foreground="{StaticResource MutedBrush}"/>
-                            <TextBlock x:Name="RequestsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Border>
-                </UniformGrid>
+                <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,18,0,18">
+                    <UniformGrid Columns="4" Margin="0,0,0,18">
+                        <Border Style="{StaticResource StatCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Total Users" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock x:Name="UsersCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource StatCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Hospitals" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock x:Name="HospitalsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource StatCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Donors" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock x:Name="DonorsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="16" Padding="18" Background="#FFF5F8FF" BorderBrush="#FFD9E2F5" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Blood Requests" Foreground="{StaticResource MutedBrush}"/>
+                                <TextBlock x:Name="RequestsCountText" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TitleBrush}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="ViewUsersButton"
+                                Content="View Users"
+                                Grid.Column="0"
+                                Margin="0,0,8,0"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button x:Name="EditDonorsButton"
+                                Content="Manage Donors"
+                                Grid.Column="1"
+                                Margin="4,0,4,0"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button x:Name="ViewHospitalsButton"
+                                Content="View Hospitals"
+                                Grid.Column="2"
+                                Margin="4,0,4,0"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button x:Name="EditHospitalsButton"
+                                Content="Manage Hospitals"
+                                Grid.Column="3"
+                                Margin="8,0,0,0"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                    </Grid>
+                </StackPanel>
 
                 <Border Grid.Row="2"
                         Padding="16"

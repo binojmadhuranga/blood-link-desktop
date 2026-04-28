@@ -7,16 +7,20 @@ namespace BloodDonationManagementSystem.Views;
 public partial class AdminDashboardView : UserControl
 {
     public event Action? LogoutRequested;
-    public event Action? ManageDonorsRequested;
-    public event Action? ManageHospitalsRequested;
+    public event Action? ViewUsersRequested;
+    public event Action? EditDonorsRequested;
+    public event Action? ViewHospitalsRequested;
+    public event Action? EditHospitalsRequested;
+
     public AdminDashboardView(string username, int userId)
     {
         InitializeComponent();
         RefreshButton.Click += Refresh_Click;
         LogoutButton.Click += Logout_Click;
-        ManageDonorsButton.Click += ManageDonors_Click;
-        ManageHospitalsButton.Click += ManageHospitals_Click;
-        WelcomeText.Text = $"Welcome {username}. You are signed in as Admin.";
+        ViewUsersButton.Click += ViewUsers_Click;
+        EditDonorsButton.Click += EditDonors_Click;
+        ViewHospitalsButton.Click += ViewHospitals_Click;
+        EditHospitalsButton.Click += EditHospitals_Click;
         LoadDashboard();
     }
     private void LoadDashboard()
@@ -49,14 +53,24 @@ public partial class AdminDashboardView : UserControl
         LogoutRequested?.Invoke();
     }
 
-    private void ManageDonors_Click(object sender, RoutedEventArgs e)
+    private void ViewUsers_Click(object sender, RoutedEventArgs e)
     {
-        ManageDonorsRequested?.Invoke();
+        ViewUsersRequested?.Invoke();
     }
 
-    private void ManageHospitals_Click(object sender, RoutedEventArgs e)
+    private void EditDonors_Click(object sender, RoutedEventArgs e)
     {
-        ManageHospitalsRequested?.Invoke();
+        EditDonorsRequested?.Invoke();
+    }
+
+    private void ViewHospitals_Click(object sender, RoutedEventArgs e)
+    {
+        ViewHospitalsRequested?.Invoke();
+    }
+
+    private void EditHospitals_Click(object sender, RoutedEventArgs e)
+    {
+        EditHospitalsRequested?.Invoke();
     }
 }
 public record AdminRequestItem(
