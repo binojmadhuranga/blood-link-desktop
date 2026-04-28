@@ -7,11 +7,15 @@ namespace BloodDonationManagementSystem.Views;
 public partial class AdminDashboardView : UserControl
 {
     public event Action? LogoutRequested;
+    public event Action? ManageDonorsRequested;
+    public event Action? ManageHospitalsRequested;
     public AdminDashboardView(string username, int userId)
     {
         InitializeComponent();
         RefreshButton.Click += Refresh_Click;
         LogoutButton.Click += Logout_Click;
+        ManageDonorsButton.Click += ManageDonors_Click;
+        ManageHospitalsButton.Click += ManageHospitals_Click;
         WelcomeText.Text = $"Welcome {username}. You are signed in as Admin.";
         LoadDashboard();
     }
@@ -43,6 +47,16 @@ public partial class AdminDashboardView : UserControl
     private void Logout_Click(object sender, RoutedEventArgs e)
     {
         LogoutRequested?.Invoke();
+    }
+
+    private void ManageDonors_Click(object sender, RoutedEventArgs e)
+    {
+        ManageDonorsRequested?.Invoke();
+    }
+
+    private void ManageHospitals_Click(object sender, RoutedEventArgs e)
+    {
+        ManageHospitalsRequested?.Invoke();
     }
 }
 public record AdminRequestItem(

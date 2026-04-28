@@ -52,6 +52,8 @@ public partial class MainWindow : Window
             {
                 case AdminDashboardView adminDashboard:
                     adminDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
+                    adminDashboard.ManageDonorsRequested += () => _ = ShowAdminManageDonorsAsync(user);
+                    adminDashboard.ManageHospitalsRequested += () => _ = ShowAdminManageHospitalsAsync(user);
                     break;
                 case HospitalDashboardView hospitalDashboard:
                     hospitalDashboard.LogoutRequested += () => _ = ShowLoginViewAsync();
@@ -111,6 +113,58 @@ public partial class MainWindow : Window
         requestView.LogoutRequested += () => _ = ShowLoginViewAsync();
 
         await NavigateToAsync(requestView);
+    }
+
+    private async Task ShowAdminManageDonorsAsync(User user)
+    {
+        var manageDonorsView = new AdminViewDonorsView();
+        manageDonorsView.BackRequested += () => _ = ShowDashboardViewAsync(user);
+        manageDonorsView.EditDonorRequested += donorId => _ = ShowAdminEditDonorAsync(user, donorId);
+        manageDonorsView.ViewDonorRequested += donorId => _ = ShowAdminViewDonorDetailsAsync(user, donorId);
+
+        await NavigateToAsync(manageDonorsView);
+    }
+
+    private async Task ShowAdminEditDonorAsync(User user, int donorId)
+    {
+        var editDonorView = new AdminEditDonorView(donorId);
+        editDonorView.BackRequested += () => _ = ShowAdminManageDonorsAsync(user);
+
+        await NavigateToAsync(editDonorView);
+    }
+
+    private async Task ShowAdminViewDonorDetailsAsync(User user, int donorId)
+    {
+        var donorDetailsView = new AdminViewDonorDetailsView(donorId);
+        donorDetailsView.BackRequested += () => _ = ShowAdminManageDonorsAsync(user);
+
+        await NavigateToAsync(donorDetailsView);
+    }
+
+    private async Task ShowAdminManageHospitalsAsync(User user)
+    {
+        var manageHospitalsView = new AdminViewHospitalsView();
+        manageHospitalsView.BackRequested += () => _ = ShowDashboardViewAsync(user);
+        manageHospitalsView.EditHospitalRequested += hospitalId => _ = ShowAdminEditHospitalAsync(user, hospitalId);
+        manageHospitalsView.ViewHospitalRequested += hospitalId => _ = ShowAdminViewHospitalDetailsAsync(user, hospitalId);
+
+        await NavigateToAsync(manageHospitalsView);
+    }
+
+    private async Task ShowAdminEditHospitalAsync(User user, int hospitalId)
+    {
+        var editHospitalView = new AdminEditHospitalView(hospitalId);
+        editHospitalView.BackRequested += () => _ = ShowAdminManageHospitalsAsync(user);
+
+        await NavigateToAsync(editHospitalView);
+    }
+
+    private async Task ShowAdminViewHospitalDetailsAsync(User user, int hospitalId)
+    {
+        var hospitalDetailsView = new AdminViewHospitalDetailsView(hospitalId);
+        hospitalDetailsView.BackRequested += () => _ = ShowAdminManageHospitalsAsync(user);
+
+        await NavigateToAsync(hospitalDetailsView);
     }
 
     private async Task NavigateToAsync(UserControl view)

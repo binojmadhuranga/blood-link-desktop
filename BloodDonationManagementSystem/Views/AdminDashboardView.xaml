@@ -74,6 +74,14 @@
                                 Width="120"
                                 Style="{StaticResource PrimaryButtonStyle}"/>
                     </StackPanel>
+
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,130,0">
+                        <Button x:Name="ManageDonorsButton" Content="Manage Donors"
+                                Margin="0,0,10,0"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button x:Name="ManageHospitalsButton" Content="Manage Hospitals"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                    </StackPanel>
                 </DockPanel>
 
                 <UniformGrid Grid.Row="1" Columns="4" Margin="0,18,0,18">
