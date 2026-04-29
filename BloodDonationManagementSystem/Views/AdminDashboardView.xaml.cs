@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using BloodDonationManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 namespace BloodDonationManagementSystem.Views;
 public partial class AdminDashboardView : UserControl
 {
@@ -16,6 +20,7 @@ public partial class AdminDashboardView : UserControl
     {
         InitializeComponent();
         RefreshButton.Click += Refresh_Click;
+            GenerateReportButton.Click += GenerateReport_Click;
         LogoutButton.Click += Logout_Click;
         ViewUsersButton.Click += ViewUsers_Click;
         EditDonorsButton.Click += EditDonors_Click;
@@ -23,6 +28,96 @@ public partial class AdminDashboardView : UserControl
         EditHospitalsButton.Click += EditHospitals_Click;
         LoadDashboard();
     }
+
+        private void GenerateReport_Click(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                using var db = new AppDbContext();
+
+                var hospitals = db.Hospitals
+                    .AsNoTracking()
+                    .OrderBy(h => h.Name)
+                    .Select(h => new
+                    {
+                        h.Id,
+                        h.Name,
+                        h.Location,
+                        h.ContactNumber,
+                        RequestCount = db.BloodRequests.Count(r => r.HospitalId == h.Id)
+                    })
+                    .ToList();
+
+                var requests = db.BloodRequests
+                    .AsNoTracking()
+                    .Include(r => r.Hospital)
+                    .Include(r => r.Donor)
+                    .OrderByDescending(r => r.RequestedAt)
+                    .Select(r => new
+                    {
+                        r.Id,
+                        HospitalId = r.HospitalId,
+                        HospitalName = r.Hospital != null ? r.Hospital.Name : "",
+                        DonorId = r.DonorId,
+                        DonorName = r.Donor != null ? r.Donor.FullName : "",
+                        r.BloodGroup,
+                        r.Quantity,
+                        r.Status,
+                        r.RequestedAt
+                    })
+                    .ToList();
+
+                var sb = new StringBuilder();
+
+                sb.AppendLine("Hospitals Summary");
+                sb.AppendLine("HospitalId,Name,Location,ContactNumber,TotalRequests");
+                foreach (var h in hospitals)
+                {
+                    // escape commas
+                    string name = EscapeCsv(h.Name);
+                    string loc = EscapeCsv(h.Location);
+                    string contact = EscapeCsv(h.ContactNumber);
+                    sb.AppendLine($"{h.Id},{name},{loc},{contact},{h.RequestCount}");
+                }
+
+                sb.AppendLine();
+                sb.AppendLine("Requests Details");
+                sb.AppendLine("RequestId,HospitalId,HospitalName,DonorId,DonorName,BloodGroup,Quantity,Status,RequestedAt");
+                foreach (var r in requests)
+                {
+                    string hname = EscapeCsv(r.HospitalName);
+                    string dname = EscapeCsv(r.DonorName);
+                    sb.AppendLine($"{r.Id},{r.HospitalId},{hname},{r.DonorId},{dname},{r.BloodGroup},{r.Quantity},{r.Status},{r.RequestedAt:O}");
+                }
+
+                var dlg = new SaveFileDialog()
+                {
+                    Title = "Save admin report",
+                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                    FileName = $"admin-report-{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+                };
+
+                if (dlg.ShowDialog() == true)
+                {
+                    File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
+                    MessageBox.Show(Window.GetWindow(this), "Report saved to: " + dlg.FileName, "Report Generated", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(Window.GetWindow(this), "Failed to generate report: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private static string EscapeCsv(string? input)
+        {
+            if (string.IsNullOrEmpty(input)) return "";
+            if (input.Contains(',') || input.Contains('"') || input.Contains('\n') || input.Contains('\r'))
+            {
+                return '"' + input.Replace("\"", "\"\"") + '"';
+            }
+            return input;
+        }
     private void LoadDashboard()
     {
         using var db = new AppDbContext();
